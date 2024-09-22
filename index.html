@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪刀石頭布遊戲</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* 你的 CSS 保持不變 */
+        body {
+            background: linear-gradient(45deg, #ffafbd, #ffc3a0);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .choice-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .choice-btn img {
+            width: 100px;
+            height: 100px;
+        }
+        .choice-btn:hover {
+            transform: scale(1.1);
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 24px;
+        }
+        .win {
+            color: green;
+        }
+        .lose {
+            color: red;
+        }
+        .draw {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>剪刀石頭布</h1>
+    <div class="container">
+        <button class="choice-btn" onclick="playGame('剪刀')">
+            <img src="剪刀.jpeg" alt="剪刀">
+        </button>
+        <button class="choice-btn" onclick="playGame('石頭')">
+            <img src="石頭.jpeg" alt="石頭">
+        </button>
+        <button class="choice-btn" onclick="playGame('布')">
+            <img src="布.jpeg" alt="布">
+        </button>
+    </div>
+    <div id="result"></div>
+
+    <!-- 音效檔 -->
+    <audio id="winSound" src="win.mp3"></audio>
+    <audio id="loseSound" src="lose.mp3"></audio>
+    <audio id="drawSound" src="draw.mp3"></audio>
+
+    <script>
+        const choices = ['剪刀', '石頭', '布'];
+        let userScore = 0;
+        let computerScore = 0;
+
+        function playGame(userChoice) {
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+            let result = '';
+            let resultClass = '';
+
+            const winSound = document.getElementById('winSound');
+            const loseSound = document.getElementById('loseSound');
+            const drawSound = document.getElementById('drawSound');
+
+            // 判斷輸贏
+            if (userChoice === computerChoice) {
+                result = `你選擇了 ${userChoice}，電腦選擇了 ${computerChoice}，平手！`;
+                resultClass = 'draw';
+                drawSound.play();
+            } else if (
+                (userChoice === '剪刀' && computerChoice === '布') ||
+                (userChoice === '石頭' && computerChoice === '剪刀') ||
+                (userChoice === '布' && computerChoice === '石頭')
+            ) {
+                result = `你選擇了 ${userChoice}，電腦選擇了 ${computerChoice}，你贏了！`;
+                resultClass = 'win';
+                winSound.play();
+                userScore++;
+            } else {
+                result = `你選擇了 ${userChoice}，電腦選擇了 ${computerChoice}，你輸了！`;
+                resultClass = 'lose';
+                loseSound.play();
+                computerScore++;
+            }
+
+            // 顯示結果
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = result;
+            resultDiv.className = resultClass;
+
+            // 檢查勝負
+            checkVictory();
+        }
+
+        function checkVictory() {
+            if (userScore === 3 || computerScore === 3) {
+                let winner = userScore === 3 ? '玩家' : '電腦';
+                Swal.fire({
+                    title: `${winner}獲得了勝利！`,
+                    text: "遊戲將重新開始。",
+                    icon: 'success',
+                    confirmButtonText: '確定'
+                }).then(() => {
+                    // 重置分數
+                    userScore = 0;
+                    computerScore = 0;
+                    document.getElementById('result').innerHTML = '';
+                });
+            }
+        }
+    </script>
+</body>
+</html>
